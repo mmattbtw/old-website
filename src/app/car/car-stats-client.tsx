@@ -2,11 +2,14 @@
 
 import {
   createColumnHelper,
+  createPaginatedRowModel,
+  createSortedRowModel,
   flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
+  rowPaginationFeature,
+  rowSortingFeature,
+  sortFns,
+  tableFeatures,
+  useTable,
   type SortingState,
 } from "@tanstack/react-table";
 import { Loader2Icon, WifiIcon, WifiOffIcon } from "lucide-react";
@@ -415,13 +418,21 @@ function RangeChart({ data }: { data: CarDataPoint[] }) {
   );
 }
 
-const columnHelper = createColumnHelper<CarDataPoint>();
+const features = tableFeatures({
+  rowSortingFeature,
+  rowPaginationFeature,
+  sortedRowModel: createSortedRowModel(),
+  paginatedRowModel: createPaginatedRowModel(),
+  sortFns,
+});
 
-const columns = [
+const columnHelper = createColumnHelper<typeof features, CarDataPoint>();
+
+const columns = columnHelper.columns([
   columnHelper.accessor("createdAt", {
     header: "Date",
     cell: (info) => formatFullDate(info.getValue()),
-    sortingFn: (rowA, rowB) => {
+    sortFn: (rowA, rowB) => {
       return (
         new Date(rowA.original.createdAt).getTime() -
         new Date(rowB.original.createdAt).getTime()
@@ -444,7 +455,7 @@ const columns = [
     header: "Gallons",
     cell: (info) => `${info.getValue()} gal`,
   }),
-];
+]);
 
 // Jetstream event types
 interface JetstreamCommitEvent {
@@ -586,18 +597,17 @@ export function CarStatsClient({
   // Deduplicate records
   const dedupedRecords = useMemo(() => deduplicateRecords(records), [records]);
 
-  const table = useReactTable({
+  const table = useTable({
+    features,
     data: dedupedRecords,
     columns,
     state: {
       sorting,
     },
     onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     initialState: {
       pagination: {
+        pageIndex: 0,
         pageSize: 20,
       },
     },
@@ -817,7 +827,7 @@ export function CarStatsClient({
             <tbody>
               {table.getRowModel().rows.map((row) => (
                 <tr key={row.id} className="border-t border-white/5">
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getAllCells().map((cell) => (
                     <td key={cell.id} className="p-3">
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -835,13 +845,13 @@ export function CarStatsClient({
         <div className="p-4 bg-white/5 border-t flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
             Showing{" "}
-            {table.getState().pagination.pageIndex *
-              table.getState().pagination.pageSize +
+            {table.state.pagination.pageIndex *
+              table.state.pagination.pageSize +
               1}{" "}
             to{" "}
             {Math.min(
-              (table.getState().pagination.pageIndex + 1) *
-                table.getState().pagination.pageSize,
+              (table.state.pagination.pageIndex + 1) *
+                table.state.pagination.pageSize,
               dedupedRecords.length,
             )}{" "}
             of {dedupedRecords.length} records
