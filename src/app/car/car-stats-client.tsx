@@ -217,7 +217,7 @@ function FuelChart({ data }: { data: CarDataPoint[] }) {
           <ChartTooltip
             content={
               <ChartTooltipContent
-                labelFormatter={(value) => formatFullDate(value)}
+                labelFormatter={(value) => formatFullDate(String(value))}
                 formatter={(value) => [
                   `${Math.round(Number(value))}%`,
                   " Fuel Level",
@@ -305,7 +305,7 @@ function OdometerChart({ data }: { data: CarDataPoint[] }) {
           <ChartTooltip
             content={
               <ChartTooltipContent
-                labelFormatter={(value) => formatFullDate(value)}
+                labelFormatter={(value) => formatFullDate(String(value))}
                 formatter={(value) => [
                   `${Number(value).toLocaleString()} mi`,
                   " Odometer",
@@ -393,7 +393,7 @@ function RangeChart({ data }: { data: CarDataPoint[] }) {
           <ChartTooltip
             content={
               <ChartTooltipContent
-                labelFormatter={(value) => formatFullDate(value)}
+                labelFormatter={(value) => formatFullDate(String(value))}
                 formatter={(value) => [
                   `${Number(value).toLocaleString()} mi`,
                   " Est. Range",
