@@ -108,5 +108,5 @@ const nextConfig = {
 };
 
 export default withPlausibleProxy({
-  customDomain: "https://plausible.mmatt.net",
+  src: "https://plausible.mmatt.net/js/pa-X3dF9juvESKqwmD1InMWC.js",
 })(nextConfig);

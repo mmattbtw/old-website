@@ -42,13 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* TODO: */}
-        <NextPlausible
-          domain="mmatt.net"
-          customDomain="https://plausible.mmatt.net"
-          trackOutboundLinks
-          selfHosted
-        />
+        <NextPlausible />
       </head>
       <body
         className={cx(
